@@ -1,79 +1,89 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>會學習的對話AI</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#8b5cf6">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="icon-192.png">
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
-  body{font-family:'Noto Sans TC',sans-serif}
-  .glass{backdrop-filter:blur(20px); background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1)}
-  .bubble-user{background:linear-gradient(135deg,#8b5cf6,#3b82f6)}
-</style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101116"><meta name="description" content="個人專屬 X 影片收藏庫">
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icons/icon-180.png">
+<title>我的影片庫</title><link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-[#0a0a0a] text-white min-h-screen flex flex-col">
-<header class="sticky top-0 z-50 glass border-b border-white/10 px-4 py-3 flex items-center justify-between">
-  <div class="flex items-center gap-3">
-    <img src="icon-192.png" class="w-9 h-9 rounded-xl">
-    <div>
-      <h1 class="font-bold leading-none">會學習的對話AI</h1>
-      <p class="text-[11px] text-white/60">100% 本地 · 離線可用 · PWA</p>
-    </div>
-  </div>
-  <div id="pwaStatus" class="text-[11px] px-2.5 py-1 rounded-full bg-white/10">檢查中...</div>
-</header>
-<div class="flex-1 flex flex-col lg:flex-row max-w-6xl w-full mx-auto">
-  <div class="flex-1 flex flex-col h-[calc(100vh-56px)]">
-    <div id="chat" class="flex-1 overflow-y-auto p-4 space-y-3">
-      <div class="flex gap-2">
-        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm">🤖</div>
-        <div class="glass rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%] text-[14px] leading-relaxed">嗨，我是你的學習型AI，現在是白紙狀態。你可以教我：<br><br>「<b>記住：我叫Paul</b>」<br>「<b>記住：我喜歡拿鐵不加糖</b>」<br>「<b>不對，應該是...</b>」<br><br>我會記在你手機裡，完全不經過網路。</div>
-      </div>
-    </div>
-    <div class="p-3 border-t border-white/10 glass">
-      <div class="flex gap-2 mb-2 overflow-x-auto">
-        <button onclick="quick('記住：我叫Paul')" class="shrink-0 text-xs px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20">記住：我叫Paul</button>
-        <button onclick="quick('記住：我喜歡拿鐵')" class="shrink-0 text-xs px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20">記住：我喜歡拿鐵</button>
-        <button onclick="quick('我有什麼喜好？')" class="shrink-0 text-xs px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20">我有什麼喜好？</button>
-      </div>
-      <div class="flex gap-2">
-        <input id="input" placeholder="教它點什麼，或跟它聊聊..." class="flex-1 bg-white/10 rounded-full px-4 py-3 text-sm outline-none focus:bg-white/15" onkeydown="if(event.key==='Enter')send()">
-        <button onclick="send()" class="w-11 h-11 rounded-full bubble-user flex items-center justify-center font-bold">↑</button>
-      </div>
-    </div>
-  </div>
-  <div class="w-full lg:w-[340px] border-t lg:border-t-0 lg:border-l border-white/10 bg-black/20 p-4 space-y-4 overflow-y-auto">
-    <div class="flex gap-2">
-      <button onclick="switchTab('memory')" id="tab-memory" class="flex-1 py-2 rounded-full bg-white text-black text-sm font-medium">記憶庫</button>
-      <button onclick="switchTab('persona')" id="tab-persona" class="flex-1 py-2 rounded-full bg-white/10 text-sm">性格</button>
-      <button onclick="switchTab('install')" id="tab-install" class="flex-1 py-2 rounded-full bg-white/10 text-sm">安裝</button>
-    </div>
-    <div id="panel-memory">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="font-medium text-sm">🧠 它的記憶 (存在你手機)</h3>
-        <span id="memCount" class="text-xs text-white/60">0 條</span>
-      </div>
-      <div id="memList" class="space-y-2"></div>
-      <button onclick="clearMem()" class="w-full mt-3 py-2 rounded-full bg-red-500/20 text-red-300 text-xs">一鍵清除所有記憶</button>
-    </div>
-  </div>
+<body>
+<header class="topbar"><div><div class="eyebrow">PERSONAL VIDEO VAULT</div><h1>我的影片庫</h1></div><div class="top-actions"><button id="installBtn" class="secondary hidden">安裝 App</button><button id="moreBtn" class="secondary" aria-label="備份與設定">⋯</button></div></header>
+<main>
+<div class="searchbox"><span>⌕</span><input id="search" type="search" placeholder="搜尋名稱、備註或標籤…"></div>
+
+<section id="homeView"><div id="albumGrid" class="album-grid"></div></section>
+
+<section id="listView" class="hidden">
+<nav id="crumbs" class="crumbs"></nav>
+<div class="list-head"><button id="backBtn" class="secondary">‹ 返回</button><div class="list-title"><h2 id="listTitle"></h2><span id="listCount" class="muted"></span></div><div class="list-actions"><select id="sort" aria-label="排序"><option value="newest">最新收藏</option><option value="oldest">最早收藏</option><option value="title">名稱排序</option></select><button id="subNewBtn" class="secondary hidden">＋ 子相簿</button><button id="albumEditBtn" class="secondary">編輯相簿</button></div></div>
+<div id="subWrap" class="hidden"><div class="section-label">子相簿</div><div id="subGrid" class="album-grid"></div></div>
+<div id="videoLabel" class="section-label hidden">影片</div>
+<section id="videoGrid" class="thumb-grid"></section>
+<div id="empty" class="empty hidden"><div class="empty-icon">▶</div><h3>沒有影片</h3><p id="emptyText"></p></div>
+</section>
+</main>
+
+<button id="fab" aria-label="加入影片">＋</button>
+<div id="toast" class="toast hidden" role="status"></div>
+
+<dialog id="viewDialog" class="viewer"><div class="viewer-top"><button type="button" id="viewClose" class="icon-btn" aria-label="關閉">✕</button><div id="viewTitle" class="viewer-title"></div><button type="button" id="viewEdit" class="icon-btn" aria-label="編輯">•••</button></div>
+<div id="viewBody" class="viewer-body"></div><div id="viewInfo" class="viewer-info"></div>
+<div class="viewer-nav"><button type="button" id="viewPrev" class="secondary">‹ 上一部</button><span id="viewPos" class="muted"></span><button type="button" id="viewNext" class="secondary">下一部 ›</button></div>
+<input type="file" id="viewFile" accept="video/*,.mp4,.mov,.m4v,.webm,.mkv" hidden></dialog>
+
+<dialog id="cmpDialog" class="cmp"><h3 class="cmp-head">發現內容相同的影片</h3>
+<p class="hint">這部影片的內容跟影片庫裡的一部相同，但解析度或片長不一樣。要怎麼處理？</p>
+<div class="cmp-grid"><div id="cmpOld"></div><div id="cmpNew"></div></div>
+<div id="cmpChecks" class="cmp-checks"></div>
+<div class="cmp-actions"><button type="button" id="cmpOverwrite">覆蓋舊影片</button><button type="button" id="cmpBoth" class="secondary">兩部都保留</button><button type="button" id="cmpSkip" class="secondary">略過這部</button></div>
+<p class="hint">覆蓋時會沿用舊影片的名稱、相簿和備註，只換成新的影片檔。</p></dialog>
+
+<dialog id="resultDialog" class="mini res"><h3 class="cmp-head">加入結果</h3><div id="resultList" class="res-list"></div><button type="button" id="resultOk" class="mini-save on">知道了</button></dialog>
+
+<dialog id="addDialog"><form id="addForm" method="dialog"><div class="dialog-head"><h2>加入影片</h2><button type="button" id="closeAdd" class="icon-btn" aria-label="關閉">✕</button></div>
+<div class="tabs"><button type="button" id="tabX">X 影片連結</button><button type="button" id="tabLocal" class="secondary">本機影片</button></div>
+<div id="rowX"><label for="postUrl">X 貼文分享連結</label><input id="postUrl" type="url" placeholder="https://x.com/帳號/status/…"><p class="hint">只儲存連結與你的整理資料，不會下載影片檔。</p></div>
+<div id="rowLocal" class="hidden"><label for="addFiles">選擇影片</label><input id="addFiles" type="file" accept="video/*,.mp4,.mov,.m4v,.webm,.mkv" multiple><p class="hint">影片會存進這部裝置的瀏覽器（不會上傳到網站），加入後點縮圖即可播放。一次選多部時，名稱會用各自的檔名，相簿與備註則共用。</p></div>
+<label for="addTitle">影片名稱（選填）</label><input id="addTitle" maxlength="200" placeholder="不填會自動命名">
+<label>放進相簿</label><div id="addSel" class="sel-chips"></div><button type="button" id="addPickBtn" class="secondary">選擇／新增相簿</button><p class="hint">放進「台灣 › 水果 › 香蕉」，影片就會同時帶有「台灣」「水果」「香蕉」三個標籤；搜尋或打開「台灣」時，底下所有子相簿的影片都會出現。</p>
+<label for="addNotes">備註（選填）</label><textarea id="addNotes" rows="2" placeholder="記下想看的內容…"></textarea>
+<div id="formError" class="error" role="status"></div>
+<div class="dialog-actions"><span></span><button type="submit" id="addSubmit">加入</button></div></form></dialog>
+
+<dialog id="editDialog"><form id="editForm" method="dialog"><div class="dialog-head"><h2>整理影片</h2><button type="button" id="closeDialog" class="icon-btn" aria-label="關閉">✕</button></div>
+<label for="editTitle">影片名稱</label><input id="editTitle" maxlength="200" placeholder="輸入自己容易記住的名稱">
+<label>放進相簿</label><div id="editSel" class="sel-chips"></div><button type="button" id="editPickBtn" class="secondary">選擇／新增相簿</button><p class="hint">一部影片可以放進多個相簿，上層相簿的標籤會自動帶入。</p>
+<div id="editCoverRow"><label>封面畫面</label><div class="cover-edit"><div id="editCoverPreview" class="cover-preview wide"></div><div class="cover-buttons"><button type="button" id="editCoverRegen" class="secondary">重新擷取畫面</button><button type="button" id="editCoverPick" class="secondary">選擇照片</button><button type="button" id="editCoverClear" class="secondary hidden">移除封面</button><p id="editCoverMsg" class="hint"></p></div></div><input type="file" id="editCoverInput" accept="image/*" hidden></div>
+<label for="editNotes">備註</label><textarea id="editNotes" rows="3" placeholder="記下想看的內容…"></textarea>
+<div class="dialog-actions"><button type="button" id="deleteBtn" class="danger secondary">刪除</button><button type="submit">儲存變更</button></div></form></dialog>
+
+<dialog id="albumSettings" class="sheet"><div class="sheet-top"><button type="button" id="setClose" class="round-btn" aria-label="關閉">✕</button><div class="sheet-title">相簿設定</div><span class="sheet-spacer"></span></div>
+<div class="sheet-body">
+<div class="set-group">
+<button type="button" class="set-row" id="setName"><span class="set-label">相簿名稱</span><span class="set-val" id="setNameVal"></span><i class="chev">›</i></button>
+<button type="button" class="set-row" id="setCover"><span class="set-label">封面照片</span><span class="set-val"><span id="setCoverThumb" class="set-thumb"></span></span><i class="chev">›</i></button>
+<button type="button" class="set-row hidden" id="setCoverClear"><span class="set-label">移除自訂封面（改用自動封面）</span><i class="chev">›</i></button>
+<label class="set-row set-select"><span class="set-label">移動相簿</span><span class="set-val" id="setParentVal"></span><i class="chev">›</i><select id="setParent" aria-label="移動相簿到"></select></label>
+<div class="set-row static"><span class="set-label">檔案大小</span><span class="set-val" id="setSize"></span></div>
 </div>
-<script>
-let deferredPrompt;
-const installBtn=document.getElementById('installBtn');
-const pwaStatus=document.getElementById('pwaStatus');
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;installBtn?.classList.remove('hidden');pwaStatus.textContent='可安裝';});
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(()=>{pwaStatus.textContent='離線可用 ✓';});}
-let memories=JSON.parse(localStorage.getItem('ai_memories')||'[]');
-function quick(t){document.getElementById('input').value=t;send();}
-function send(){const i=document.getElementById('input');const txt=i.value.trim();if(!txt)return;addMsg('user',txt);i.value='';setTimeout(()=>{addMsg('ai','收到：'+txt);},300);}
-function addMsg(r,t){const c=document.getElementById('chat');const d=document.createElement('div');d.className='flex gap-2 '+(r==='user'?'justify-end':'');d.innerHTML=r==='user'?'<div class="bubble-user rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%] text-[14px]">'+t+'</div>':'<div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm">🤖</div><div class="glass rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%] text-[14px]">'+t+'</div>';c.appendChild(d);c.scrollTop=c.scrollHeight;}
-</script>
-</body>
-</html>
+<p id="setSizeNote" class="set-note"></p>
+<button type="button" id="setDelete" class="set-delete">刪除相簿</button>
+<input type="file" id="setCoverInput" accept="image/*" hidden>
+</div></dialog>
+
+<dialog id="nameDialog" class="mini"><form id="nameForm" method="dialog"><div class="mini-head"><h3 id="nameTitle"></h3><button type="button" id="nameClose" class="mini-x" aria-label="關閉">✕</button></div>
+<input id="nameInput" maxlength="40" autocomplete="off"><button type="submit" id="nameSave" class="mini-save">保存</button></form></dialog>
+
+<dialog id="pickDialog"><div class="dialog-head"><h2>選擇相簿</h2><button type="button" id="closePick" class="icon-btn" aria-label="關閉">✕</button></div>
+<p class="hint">可複選。選「香蕉」時，上層的「台灣」「水果」也會自動變成這部影片的標籤。</p>
+<div id="pickList" class="pick-list"></div>
+<label for="pickNewPath">快速新增相簿（用 / 分層）</label><div class="input-row"><input id="pickNewPath" placeholder="台灣/水果/香蕉"><button id="pickNewBtn" type="button">新增</button></div>
+<p class="hint">已存在的層級會直接沿用，只補上缺少的部分。</p>
+<div class="dialog-actions"><span></span><button id="pickDone" type="button">完成</button></div></dialog>
+
+<dialog id="moreDialog"><div class="dialog-head"><h2>備份與設定</h2><button type="button" id="closeMore" class="icon-btn" aria-label="關閉">✕</button></div>
+<p class="hint">資料儲存在這部裝置的瀏覽器中。清除網站資料會一併刪除收藏與本機影片，請定期匯出備份。備份檔包含相簿、封面、連結與整理資料，但不包含本機影片檔。</p>
+<div class="backup-actions"><button id="exportBtn" class="secondary">匯出備份</button><button id="importBtn" class="secondary">匯入備份</button><input type="file" id="importFile" accept="application/json,.json" hidden></div>
+<p class="hint">影片由 X 提供播放；部分貼文可能不允許嵌入。</p></dialog>
+<script src="app.js"></script>
+</body></html>
